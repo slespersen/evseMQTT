@@ -89,7 +89,7 @@ Seemingly unexpected behavior, but working as intended:
 
 A big thank you to the following contributors:
 
--   [bakkers](https://github.com/Phil242) for documenting findings: https://gist.github.com/bakkerrs/cb75e3c3a337f8f38a3f84f4b49beaa5
+-   [bakkers](https://github.com/bakkers) for documenting findings: https://gist.github.com/bakkerrs/cb75e3c3a337f8f38a3f84f4b49beaa5
     
 -   [johnwoo-nl](https://github.com/johnwoo-nl) for building emproto: https://github.com/johnwoo-nl/emproto/tree/main?tab=readme-ov-file
     
