@@ -1,8 +1,8 @@
 # evseMQTT
-`evseMQTT` is a Python library designed for communicating with EVSE-based Electric Vehicle Charging Wallboxes using Bluetooth Low Energy (BLE). Due to potential security concerns of WiFi connectivity, this library facilitates a local, no cloud connection to your EVSE device. It has been tested on the Besen BS20 model using a Raspberry Pi Zero 2 W.
+`evseMQTT` is a Python library designed for communicating with EVSE-based Electric Vehicle Charging Wallboxes using Bluetooth Low Energy (BLE), and exposing its data and controls to Home Assistant using MQTT Discovery. Due to potential security concerns of WiFi connectivity, this library facilitates a local, no cloud connection to your EVSE device. It has been tested on the Besen BS20 model using a Raspberry Pi Zero 2 W.
 
 The code base is by no means perfect or especially beautiful -- pragmatic hacks are applied where needed.
-
+![Home Assistant Device view](https://raw.githubusercontent.com/slespersen/evseMQTT/refs/heads/main/evseMQTT_home_assistant.png)
 ## Features
 
 `evseMQTT` provides the following functionalities:
