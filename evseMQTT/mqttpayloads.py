@@ -381,14 +381,3 @@ class MQTTPayloads:
             discovery_entities.append(temp_entity)
     
         return discovery_entities
-        
-     def update_temperature_discovery(self, unit):
-        postfix = "c"
-        
-        if unit == "Fahrenheit":
-            postfix = "f"
-            
-        temperature_entities = {
-            "Celcius": self.entities['temperature_c']
-            "Fahrenheit": self.entities['temperature_f']
-        }

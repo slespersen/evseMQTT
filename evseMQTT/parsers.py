@@ -1,6 +1,6 @@
 from .constants import Constants
 from .utils import Utils
-from .mqttpayloads import Payloads
+from .mqttpayloads import MQTTPayloads
 
 class Parsers:  
     def login_beacon(data, identifier):
