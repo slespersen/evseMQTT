@@ -122,14 +122,33 @@ class Utils:
     @staticmethod
     def byte_to_string(byte_array):
         return ''.join(f'{byte:02X}' for byte in byte_array)
+    
+    @staticmethod
+    def meanwhile_in_shanghai():
+        # Define the timezone offset for Asia/Shanghai (+8 hours)
+        from_tz_offset = 8
         
+        # Capture the system's local timezone
+        local_tz = datetime.now().astimezone().tzinfo
+        
+        # Get the current time
+        now = datetime.now()
+        
+        # Convert the current time to the Asia/Shanghai timezone
+        shanghai_time = now.replace(tzinfo=timezone(timedelta(hours=from_tz_offset)))
+        
+        # Convert to the system's local timezone
+        local_time = shanghai_time.astimezone(local_tz)
+        
+        # Get the Unix timestamp and return it as an integer
+        timestamp = local_time.timestamp()
+        
+        return int(timestamp)
+    
     @staticmethod
     def timestamp_bytes():
-        # Get current time
-        current_time = datetime.now()
-        
         # Cast to integers
-        unix_timestamp = int(current_time.timestamp())
+        unix_timestamp = Utils.meanwhile_in_shanghai()
         
         # Convert to 4 bytes
         timestamp_bytes = unix_timestamp.to_bytes(4, byteorder='big')
@@ -233,4 +252,4 @@ class Utils:
 
         # Round to 2 decimal places
         rounded_temp = round(converted_temp, 2)
-        return str(rounded_temp)
+        return rounded_temp

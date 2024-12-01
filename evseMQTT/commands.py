@@ -157,3 +157,19 @@ class Commands:
         self.logger.debug(f"Generated command for: 33122 - get_config_lcd_brightness\n{command}")
         await self.ble_manager.message_producer(command)
         return command.hex()
+    
+    async def set_config_password(self, password):
+        if len(password) != 6:
+            self.logger.info(f"Incorret PIN length -- it should be exactly 6 digits. No more, no less.")
+            return
+        
+        # Convert the integer to a string to process each digit 
+        str_password = str(password)
+        
+        # Convert each digit to its ASCII integer representation 
+        password_integers = [ord(char) for char in str_password]
+        
+        command = Utils.build_command(self.device.info['serial'], self.device.ble_password, 33026, password_integers)
+        self.logger.debug(f"Generated command for: 33026 - set_config_password\n{command}")
+        await self.ble_manager.message_producer(command)
+        return command.hex()

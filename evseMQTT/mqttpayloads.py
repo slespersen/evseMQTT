@@ -70,7 +70,7 @@ class MQTTPayloads:
                 "payload_not_available": "offline",
                 "options": list(set(Constants.CHARGING_STATUS_DESCRIPTIONS.values())),
                 "value_template": "{{ value_json.charging_status_description }}",
-                "entity_category": "diagnostic"
+                #"entity_category": "diagnostic"
             },
             "current_state": {
                 "name": "Current State",
@@ -83,7 +83,7 @@ class MQTTPayloads:
                 "payload_not_available": "offline",
                 "options": Constants.CURRENT_STATE,
                 "value_template": "{{ value_json.current_state }}",
-                "entity_category": "diagnostic"
+                #"entity_category": "diagnostic"
             },
             "plug_state": {
                 "name": "Plug State",
@@ -145,14 +145,14 @@ class MQTTPayloads:
             },
             "current_energy": {
                 "name": "Current Energy",
-                "device_class": "energy",
+                "device_class": "power",
                 "device_type": "sensor",
                 "unique_id": f"{self.device.info['serial']}",
                 "state_topic": f"evseMQTT/{self.device.info['serial']}/state/charge",
                 "availability_topic": f"evseMQTT/{self.device.info['serial']}/availability",
                 "payload_available": "online",
                 "payload_not_available": "offline",
-                "unit_of_measurement": "kWh",
+                "unit_of_measurement": "kW",
                 "state_class": "measurement",
                 "value_template": "{{ value_json.current_energy }}",
                 "entity_category": "diagnostic"
@@ -266,6 +266,19 @@ class MQTTPayloads:
                 "max": self.device.info['output_max_amps'], 
                 "step": 1, 
                 "command_template": "{\"charge_amps\": {{ value }} }",
+                "value_template": "{{ value_json.charge_amps }}",
+            },
+            "charge_amps_sensor": {
+                "name": "Charge Amps",
+                "device_class": "current",
+                "device_type": "sensor",
+                "icon": "mdi:current-ac",
+                "unique_id": f"{self.device.info['serial']}",
+                "state_topic": f"evseMQTT/{self.device.info['serial']}/state/config",
+                "availability_topic": f"evseMQTT/{self.device.info['serial']}/availability",
+                "payload_available": "online",
+                "payload_not_available": "offline",
+                "unit_of_measurement": "A",
                 "value_template": "{{ value_json.charge_amps }}",
             },
             "l1_voltage": {

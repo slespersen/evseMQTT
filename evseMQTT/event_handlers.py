@@ -91,6 +91,7 @@ class EventHandlers:
 
                     # Update device info if command 262 is received
                     if cmd == 262:
+                        self.logger.info(f"Device respondded with {cmd}, containing {data}")
                         self.device.info = data
 
                     # Update device config if command is related
@@ -110,11 +111,11 @@ class EventHandlers:
                 if cmd == 2 and self.device.info['software_version'] is None:
                     self.logger.info(f"Device sent response to login request - confirming login")
                     await self.commands.login_confirm()
+                    await self.commands.get_config_temperature_unit()
                     await self.commands.get_config_version()
                     await self.commands.get_config_name()
                     await self.commands.get_config_output_amps()
                     await self.commands.get_config_language()
-                    await self.commands.get_config_temperature_unit()
                     await self.commands.get_config_lcd_brightness()
                     await self.commands.set_config_time()
                     await self.commands.get_charge_status_record()
