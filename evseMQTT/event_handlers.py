@@ -97,6 +97,9 @@ class EventHandlers:
                     if cmd in [257, 263, 264, 271, 274]:
                         self.logger.info(f"Device respondded with {cmd}, containing {data}")
                         self.device.config = data
+                        
+                    if cmd == 341:
+                        self.logger.error(f"Password was not accepted by device!")
                 
                 if cmd == 1 and self.device.initialization_state:
                     self.logger.info(f"Device sent login banner - requesting login")

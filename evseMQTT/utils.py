@@ -32,7 +32,7 @@ class Utils:
         packet.append(0)
 
         # Add serial (little-endian)
-        packet.extend(struct.pack('<Q', serial))
+        packet.extend(struct.pack('<Q', int(serial)))
 
         # Add password (ASCII bytes)
         packet.extend(password.encode('ascii'))
@@ -62,7 +62,7 @@ class Utils:
             "header": byte_array[0:2],
             "data_length": byte_array[2:4],
             "reserved": byte_array[4:5],
-            "identifier": int.from_bytes(byte_array[5:13], byteorder='little'),
+            "identifier": Utils.byte_to_string(byte_array[5:13]),
             "password": byte_array[13:19],
             "cmd": int.from_bytes(byte_array[19:21], byteorder='big'),
             "data": byte_array[21:-4],
@@ -118,6 +118,10 @@ class Utils:
     @staticmethod
     def bytes_to_integer(bytes, byteorder='big'):
         return int.from_bytes(bytes, byteorder=byteorder)
+        
+    @staticmethod
+    def byte_to_string(byte_array):
+        return ''.join(f'{byte:02X}' for byte in byte_array)
         
     @staticmethod
     def timestamp_bytes():
