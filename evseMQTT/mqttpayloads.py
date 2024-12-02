@@ -139,7 +139,7 @@ class MQTTPayloads:
                 "payload_available": "online",
                 "payload_not_available": "offline",
                 "unit_of_measurement": "kWh",
-                "state_class": "total",
+                "state_class": "total_increasing",
                 "value_template": "{{ value_json.current_amount }}",
                 "entity_category": "diagnostic"
             },
