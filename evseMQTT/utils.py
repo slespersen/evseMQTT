@@ -1,4 +1,5 @@
 import struct
+import zoneinfo
 from .constants import Constants
 from datetime import datetime, timezone, timedelta
 
@@ -155,11 +156,46 @@ class Utils:
         
         return list(timestamp_bytes)
         
+
     @staticmethod
     def bytes_to_timestamp(bytes):
-        local_time = datetime.fromtimestamp(bytes)
+        # Define the Asia/Shanghai timezone offset manually (+8 hours from UTC)
+        shanghai_offset = timedelta(hours=8)
+
+        # Convert the Unix epoch timestamp to a datetime object in the Asia/Shanghai timezone
+        shanghai_time = datetime.utcfromtimestamp(bytes) + shanghai_offset
+
+        # Now convert this to the system's local time zone
+        # Get the current local timezone offset including DST
+        local_time = datetime.now()
+        local_offset = local_time.utcoffset() if local_time.utcoffset() else timedelta(0)
+
+        # Convert Shanghai time to the system's local time
+        local_time = shanghai_time - local_offset
+        
         return local_time.isoformat()
-            
+        
+    @staticmethod
+    def bytes_to_timezoned_epoch(bytes):
+        # Define the Asia/Shanghai timezone offset manually (+8 hours from UTC)
+        shanghai_offset = timedelta(hours=8)
+
+        # Convert the Unix epoch timestamp to a datetime object in the Asia/Shanghai timezone
+        shanghai_time = datetime.utcfromtimestamp(bytes) + shanghai_offset
+
+        # Now convert this to the system's local time zone
+        # Get the current local timezone offset including DST
+        local_time = datetime.now()
+        local_offset = local_time.utcoffset() if local_time.utcoffset() else timedelta(0)
+
+        # Convert Shanghai time to the system's local time
+        local_time = shanghai_time - local_offset
+
+        # Convert the local time back to a Unix epoch timestamp
+        local_timestamp = int(local_time.timestamp())
+
+        return local_timestamp
+        
     @staticmethod
     def device_name(name):
         # Convert string to bytes

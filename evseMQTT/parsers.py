@@ -181,10 +181,11 @@ class Parsers:
     def system_time(data, identifier):
         epoch = Utils.bytes_to_int_little(data[1:5])
         local_time = Utils.bytes_to_timestamp(epoch)
+        local_epoch = Utils.bytes_to_timezoned_epoch(epoch)
     
         return {
             "system_time": local_time,
-            "system_time_raw": epoch
+            "system_time_raw": local_epoch
         }
         
     def system_language(data, identifier):
