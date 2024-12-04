@@ -2,7 +2,7 @@ from .constants import Constants
 from .utils import Utils
 from .mqttpayloads import MQTTPayloads
 
-class Parsers:  
+class Parsers:
     def login_beacon(data, identifier):
         return {
             "serial": identifier,
@@ -15,7 +15,7 @@ class Parsers:
             "output_max_amps": data[53],
             "support": data[54:69].strip(b'\x00').decode('utf-8')
         }
-  
+
     def login_response(data, identifier):
         return {
             "serial": identifier,
@@ -28,7 +28,7 @@ class Parsers:
             "output_max_amps": data[53],
             "support": data[54:69].strip(b'\x00').decode('utf-8')
         }
-        
+
     def version(data, identifier):
         return {
             "hardware_version": data[0:15].decode('utf-8').strip(),
@@ -112,15 +112,15 @@ class Parsers:
             f"{int(data[21]):08b}{int(data[22]):08b}" if len(data) < 25 else
             f"{int(data[21]):08b}{int(data[22]):08b}{int(data[23]):08b}{int(data[24]):08b}"
         ).replace(' ', '0')
-        
+
         plug_state = Utils.byte_to_integer(data[18])
         current_state = Utils.byte_to_integer(data[20])
-        
+
         failure_details = Utils.get_failure_details(error_info)
         charging_status_code = Utils.charging_status(plug_state, current_state)
-        
+
         inner_temp = -1.0 if Utils.bytes_to_integer(data[13:15]) == 255 else round((Utils.bytes_to_integer(data[13:15]) - 20000) * 0.01, 1)
-        
+
         object = {
             "line_id": Utils.bytes_to_integer(data[0:1]),
             "error_info": error_info,
@@ -141,13 +141,15 @@ class Parsers:
             "charging_status_description": Constants.CHARGING_STATUS_DESCRIPTIONS[charging_status_code],
             "charger_status": Constants.CHARGER_STATUS[charging_status_code]
         }
-        
+
+        l1_power = object['l1_voltage'] * object['l1_amperage']
+
         # Check if either l1_voltage or l1_amperage is zero
         if object['l1_voltage'] == 0 or object['l1_amperage'] == 0:
             object['current_energy'] = 0
         else:
-            # Calculating power for single phase in kW 
-            object['current_energy'] = (object['l1_voltage'] * object['l1_amperage']) / 1000 # kW
+            # Calculating power for single phase in W
+            object['current_energy'] = l1_power
 
         # Parsing additional fields if data length exceeds 25
         l2_voltage, l2_amperage, l3_voltage, l3_amperage = None, None, None, None
@@ -157,47 +159,47 @@ class Parsers:
             object['l3_voltage'] = round(Utils.bytes_to_integer(data[29:31]) * 0.1, 1)
             object['l3_amperage'] = round(Utils.bytes_to_integer(data[31:33]) * 0.01, 1)
             
-            # Calculating additional phases in kW
-            l2_power = (object['l2_voltage'] * object['l2_amperage']) / 1000 # kW 
-            l3_power = (object['l3_voltage'] * object['l3_amperage']) / 1000 # kW 
+            # Calculating additional phases in W
+            l2_power = object['l2_voltage'] * object['l2_amperage']
+            l3_power = object['l3_voltage'] * object['l3_amperage']
         
-            # Total power is the sum of power across all three phases 
-            object['current_energy'] = round(object['current_energy'] + l2_power + l3_power, 1)
+            # Total power in W is the sum of power across all three phases
+            object['current_energy'] = round(l1_power + l2_power + l3_power)
 
         # Parsing the main return dictionary
         return object
-        
+
     def output_amps(data, identifier):
         return {
             "charge_amps": Utils.byte_to_integer(data[1])
         }
-        
+
     def name(data, identifier):
         return {
             "device_name": data[1:32].replace(b'\x00', b'').decode('utf-8', errors='replace').strip()
         }
-        
+
     #@staticmethod
     def system_time(data, identifier):
         epoch = Utils.bytes_to_int_little(data[1:5])
         local_time = Utils.bytes_to_timestamp(epoch)
         local_epoch = Utils.bytes_to_timezoned_epoch(epoch)
-    
+
         return {
             "system_time": local_time,
             "system_time_raw": local_epoch
         }
-        
+
     def system_language(data, identifier):
         return {
             "language": Utils.get_key_by_value(Constants.LANGUAGES, Utils.byte_to_integer(data[1]))
         }
-        
+
     def system_temperature_unit(data, identifier):
         return {
             "temperature_unit": Utils.get_key_by_value(Constants.TEMPERATURE_UNIT, Utils.byte_to_integer(data[1]))
         }
-        
+
     def charge_start(data, identifier):
         return {
             "line_id": Utils.byte_to_integer(data[0]),
@@ -206,7 +208,7 @@ class Parsers:
             "error_reason": Constants.CHARGE_START_ERROR[Utils.byte_to_integer(data[3])],
             "output_amps": Utils.byte_to_integer(data[4]),
         }
-        
+
     def charge_stop(data, identifier):
         return {
             "line_id": Utils.byte_to_integer(data[0]),
