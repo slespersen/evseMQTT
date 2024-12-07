@@ -4,12 +4,13 @@ import logging
 from evseMQTT import BLEManager, Constants, Device, EventHandlers, Commands, Logger, MQTTClient, MQTTCallback, MQTTPayloads, Utils
 
 class Manager:
-    def __init__(self, address, ble_password, mqtt_enabled=False, mqtt_settings=None, logging_level=logging.INFO):
+    def __init__(self, address, ble_password, unit, mqtt_enabled=False, mqtt_settings=None, logging_level=logging.INFO):
         self.setup_logging(logging_level)
         self.logger = logging.getLogger("evseMQTT")
         debug = logging_level == logging.DEBUG  # Determine if debug logging is enabled
         
         self.device = Device(address)
+        self.device.unit = unit
         
         # Set the BLE password
         self.device.ble_password = ble_password
@@ -115,6 +116,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="BLE Manager")
     parser.add_argument("--address", type=str, required=True, help="BLE device address")
     parser.add_argument("--password", type=str, required=True, help="BLE device password")
+    parser.add_argument("--unit", type=str, default="W", help="Set the unit of measurement, for consumed power - kW or W")
     parser.add_argument("--mqtt", action='store_true', help="Enable MQTT")
     parser.add_argument("--mqtt_broker", type=str, help="MQTT broker address")
     parser.add_argument("--mqtt_port", type=int, help="MQTT broker port")
@@ -133,5 +135,5 @@ if __name__ == "__main__":
 
     logging_level = getattr(logging, args.logging_level.upper(), logging.INFO)
 
-    manager = Manager(args.address, ble_password=args.password, mqtt_enabled=args.mqtt, mqtt_settings=mqtt_settings, logging_level=logging_level)
+    manager = Manager(args.address, ble_password=args.password, unit=args.unit, mqtt_enabled=args.mqtt, mqtt_settings=mqtt_settings, logging_level=logging_level)
     asyncio.run(manager.run(args.address))

@@ -73,6 +73,11 @@ class EventHandlers:
                     # Update device info if command 262 is received
                     if cmd in [4, 13]:
                         self.logger.info(f"Device sent a single charge ac status")
+                        
+                        # If the unit is kW we divide by 1000, to achieve it in kW
+                        if self.device.unit == "kW":
+                            data['current_energy'] = data['current_energy'] / 1000
+                        
                         self.device.charge = data
                         
                     # Update device info if command 262 is received

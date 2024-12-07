@@ -70,7 +70,6 @@ class MQTTPayloads:
                 "payload_not_available": "offline",
                 "options": list(set(Constants.CHARGING_STATUS_DESCRIPTIONS.values())),
                 "value_template": "{{ value_json.charging_status_description }}",
-                #"entity_category": "diagnostic"
             },
             "current_state": {
                 "name": "Current State",
@@ -83,7 +82,6 @@ class MQTTPayloads:
                 "payload_not_available": "offline",
                 "options": Constants.CURRENT_STATE,
                 "value_template": "{{ value_json.current_state }}",
-                #"entity_category": "diagnostic"
             },
             "plug_state": {
                 "name": "Plug State",
@@ -115,6 +113,7 @@ class MQTTPayloads:
                 "name": "Date",
                 "icon": "mdi:calendar-month-outline",
                 "unique_id": f"{self.device.info['serial']}",
+                "enabled_by_default": False,
                 "state_topic": f"evseMQTT/{self.device.info['serial']}/state/config",
                 "availability_topic": f"evseMQTT/{self.device.info['serial']}/availability",
                 "value_template": "{{ value_json.system_time_raw | int | timestamp_custom('%Y-%m-%d', true) }}",
@@ -124,6 +123,7 @@ class MQTTPayloads:
                 "name": "Time",
                 "icon": "mdi:clock-outline",
                 "unique_id": f"{self.device.info['serial']}",
+                "enabled_by_default": False,
                 "state_topic": f"evseMQTT/{self.device.info['serial']}/state/config",
                 "availability_topic": f"evseMQTT/{self.device.info['serial']}/availability",
                 "value_template": "{{ value_json.system_time_raw | int | timestamp_custom('%H:%M', true) }}",
@@ -152,7 +152,7 @@ class MQTTPayloads:
                 "availability_topic": f"evseMQTT/{self.device.info['serial']}/availability",
                 "payload_available": "online",
                 "payload_not_available": "offline",
-                "unit_of_measurement": "W",
+                "unit_of_measurement": "W" if self.device.unit == "W" else "kW",
                 "state_class": "measurement",
                 "value_template": "{{ value_json.current_energy }}",
                 "entity_category": "diagnostic"

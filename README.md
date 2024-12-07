@@ -57,7 +57,8 @@ Since `evseMQTT` is not yet available on pip, it needs to be installed manually.
 ### Arguments
 
 - `--address`: (Required) The BLE device address.
-- `--password`: (Optional) The BLE device password. Default is "123456".
+- `--password`: (Required) The BLE device password. Default is "123456".
+- `--unit`: (Optional) The unit of measurement, for consumed power - kW or W (default)".
 - `--mqtt`: (Optional) Enable MQTT.
 - `--mqtt_broker`: (Optional) The MQTT broker address.
 - `--mqtt_port`: (Optional) The MQTT broker port.
@@ -72,6 +73,7 @@ Here's an example of how to run `main.py` with the necessary arguments:
 ```bash
 python main.py --address "your_device_mac_address" \
                --password "your_6_digit_pin" \
+               --unit "kW" \
                --mqtt \
                --mqtt_broker "your_mqtt_broker_address" \
                --mqtt_port 1883 \
@@ -80,7 +82,7 @@ python main.py --address "your_device_mac_address" \
                --logging_level "DEBUG"
 ```
 
-### run as container
+### Run as container
    
 ```bash
 
@@ -89,6 +91,7 @@ docker run -d --name evseMQTT \
       -v /var/run/dbus:/run/dbus \
       -e BLE_ADDRESS="your_device_mac_address" \
       -e BLE_PASSWORD="your_6_digit_pin" \
+      -e UNIT="kW" \
       -e MQTT_BROKER="your_mqtt_broker_address" \
       -e MQTT_PORT=1883 \
       -e MQTT_USER="your_mqtt_username" \
@@ -97,7 +100,7 @@ docker run -d --name evseMQTT \
       ghcr.io/slespersen/evsemqtt:latest
 ```
 
-### determine BLE address for your EVSE
+### Determine BLE address for your EVSE
 
 look for a mac address started with `ACP#` like this:
 

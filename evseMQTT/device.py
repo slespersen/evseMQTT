@@ -3,6 +3,7 @@ class Device:
         self.initialization_state = False
         self.ble_password = "123456"
         self.ble_user_id = [101, 118, 115, 101, 77, 81, 84, 84, 0, 0, 0, 0, 0, 0, 0, 0] # evseMQTT in ascii 16 bytes
+        self.unit = "W"
         self._type = None
         self._phases = None
         self._manufacturer = None
