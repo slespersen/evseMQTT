@@ -152,7 +152,7 @@ class MQTTPayloads:
                 "availability_topic": f"evseMQTT/{self.device.info['serial']}/availability",
                 "payload_available": "online",
                 "payload_not_available": "offline",
-                "unit_of_measurement": "kW",
+                "unit_of_measurement": "W",
                 "state_class": "measurement",
                 "value_template": "{{ value_json.current_energy }}",
                 "entity_category": "diagnostic"
