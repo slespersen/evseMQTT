@@ -161,6 +161,7 @@ class Constants:
 
     # Response to charge_start
     CHARGE_START_ERROR = {
+        0: "No error",
         1: "The charging plug is not plugged in properly",
         2: "System error",
         3: "Charging",
@@ -174,6 +175,7 @@ class Constants:
 
     # Response to charge_start
     CHARGE_START_RESERVATION = {
+        0: "No error",
         2: "Reservation failed, the system does not support reservation",
         3: "Reservation failed, the reservation time is more than 24 hours",
         4: "Reservation failed, the reservation time is earlier than the current time",
