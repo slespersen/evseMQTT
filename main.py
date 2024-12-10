@@ -1,6 +1,7 @@
 import argparse
 import asyncio
 import logging
+import sys
 from evseMQTT import BLEManager, Constants, Device, EventHandlers, Commands, Logger, MQTTClient, MQTTCallback, MQTTPayloads, Utils
 
 class Manager:
@@ -100,7 +101,7 @@ class Manager:
                     self.mqtt_client.publish_availability(self.device.info['serial'], "offline")
                     self.mqtt_client.disconnect()
 
-    async def restart_run(self, address = None):
+    async def restart_run(self, address=None):
         if address is None:
             address = self.address
         
@@ -111,6 +112,23 @@ class Manager:
         self.device.info = {'software_version': None}
         
         await self.run(address)
+
+    async def exit_with_error(self):
+        self.logger.error("Exiting due to repeated connection failures.")
+        # Perform necessary cleanup actions
+        if self.mqtt_client:
+            self.mqtt_client.publish_availability(self.device.info['serial'], "offline")
+            self.mqtt_client.disconnect()
+        
+        tasks = [task for task in asyncio.all_tasks() if task is not asyncio.current_task()]
+        
+        for task in tasks:
+            task.cancel()
+        
+        await asyncio.gather(*tasks, return_exceptions=True)
+        
+        self.logger.info("All tasks cancelled, exiting...")
+        sys.exit(1)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="BLE Manager")

@@ -13,8 +13,11 @@ class BLEManager:
         self.callback = callback
         self.event_handler = event_handler  # Use the EventHandlers instance passed from MainManager
         self.last_message_time = asyncio.get_event_loop().time()
-        self.message_timeout = 35  # 20 seconds timeout for message reception
-        self.logger_bleak = logging.getLogger("bleak") 
+        self.message_timeout = 35  # 35 seconds timeout for message reception
+        self.max_retries = 5  # Maximum number of retries for connection
+        
+        # Ensure bleak does not go bananas, if we set logging to DEBUG
+        self.logger_bleak = logging.getLogger("bleak")
         self.logger_bleak.setLevel(logging.INFO)
 
     async def scan(self):
@@ -28,15 +31,23 @@ class BLEManager:
 
     async def connect_device(self, address):
         if address in self.available_devices:
-            self.logger.info(f"Connecting to {address}...")
-            client = BleakClient(address, timeout=65.0)
-            await client.connect()
+            for attempt in range(self.max_retries):
+                self.logger.info(f"Connecting to {address}, attempt {attempt + 1}")
+                try:
+                    client = BleakClient(address, timeout=65.0)
+                    await client.connect()
 
-            self.connected_devices[address] = client
-            self.logger.info(f"Connected to {address}")
-            await self.start_notifications(address, Constants.READ_UUID)
-            self._schedule_reconnect_check()
-            return True
+                    self.connected_devices[address] = client
+                    self.logger.info(f"Connected to {address}")
+                    await self.start_notifications(address, Constants.READ_UUID)
+                    self._schedule_reconnect_check()
+                    return True
+                except Exception as e:
+                    self.logger.error(f"Attempt {attempt + 1} failed with error: {e}")
+                    await asyncio.sleep(2)  # Wait a bit before retrying
+            self.logger.error(f"Failed to connect to {address} after {self.max_retries} attempts")
+            await self.manager.exit_with_error()
+            return False
         else:
             self.logger.error(f"Device {address} not found")
             return False
