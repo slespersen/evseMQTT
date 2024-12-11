@@ -1,20 +1,20 @@
 FROM python:3-alpine
 
-RUN apk add bluez
-
 ENV BLE_ADDRESS="" \
     BLE_PASSWORD="" \
-    UNIT="" \
+    UNIT="W" \
+    MQTT_ENABLED="true" \
     MQTT_BROKER="" \
     MQTT_PORT="1883" \
     MQTT_USER="" \
     MQTT_PASSWORD="" \
-    LOGGING_LEVEL="INFO"
+    LOGGING_LEVEL="INFO" \
+    SYS_MODULE_TO_RELOAD=""
 
 ADD . /app
 
 WORKDIR /app
 
-RUN pip install -r requirements.txt
+RUN apk add --no-cache bluez && pip install -r requirements.txt
 
-CMD ["sh", "-c", "python main.py --address ${BLE_ADDRESS} --password ${BLE_PASSWORD} --unit ${UNIT} --mqtt --mqtt_broker ${MQTT_BROKER} --mqtt_port ${MQTT_PORT} --mqtt_user ${MQTT_USER} --mqtt_password ${MQTT_PASSWORD} --logging_level ${LOGGING_LEVEL}"]
+ENTRYPOINT ["/app/entrypoint.sh"]

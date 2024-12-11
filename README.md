@@ -1,8 +1,11 @@
 # evseMQTT
-`evseMQTT` is a Python library designed for communicating with EVSE-based Electric Vehicle Charging Wallboxes using Bluetooth Low Energy (BLE), and exposing its data and controls to Home Assistant using MQTT Discovery. Due to potential security concerns of WiFi connectivity, this library facilitates a local, no cloud connection to your EVSE device. It has been tested on the Besen BS20 model using a Raspberry Pi Zero 2 W.
+
+`evseMQTT` is a Python library designed for communicating with EVSE-based Electric Vehicle Charging Wallboxes using Bluetooth Low Energy (BLE), and exposing its data and controls to Home Assistant using MQTT Discovery.
+Due to potential security concerns of WiFi connectivity, this library facilitates a local, no cloud connection to your EVSE device. It has been tested on the Besen BS20 model using a Raspberry Pi Zero 2 W.
 
 The code base is by no means perfect or especially beautiful -- pragmatic hacks are applied where needed.
 ![Home Assistant Device view](https://raw.githubusercontent.com/slespersen/evseMQTT/refs/heads/main/evseMQTT_home_assistant.png)
+
 ## Features
 
 `evseMQTT` provides the following functionalities:
@@ -17,6 +20,7 @@ The code base is by no means perfect or especially beautiful -- pragmatic hacks 
 - **Automatic Reconnect**: In case the Bluetooth connection is stale, and no message has been received for more than 35 seconds, the script will automatically reinitialize.
 
 Additionally, `evseMQTT` allows you to read:
+
 - **Current Consumption of Energy:** Monitor the energy consumption in kilowatt-hours (kWh).
 - **Errors**: Monitor potential errors.
 - **Phase characteristics**: Monitor voltage and amperage across the phases present on the charger.
@@ -83,7 +87,7 @@ python main.py --address "your_device_mac_address" \
 ```
 
 ### Run as container
-   
+
 ```bash
 
 docker run -d --name evseMQTT \
@@ -92,6 +96,7 @@ docker run -d --name evseMQTT \
       -e BLE_ADDRESS="your_device_mac_address" \
       -e BLE_PASSWORD="your_6_digit_pin" \
       -e UNIT="kW" \
+      -e MQTT_ENABLED="true" \
       -e MQTT_BROKER="your_mqtt_broker_address" \
       -e MQTT_PORT=1883 \
       -e MQTT_USER="your_mqtt_username" \
@@ -99,6 +104,17 @@ docker run -d --name evseMQTT \
       -e LOGGING_LEVEL="INFO" \
       ghcr.io/slespersen/evsemqtt:latest
 ```
+
+### handle bluetooth module crashes in container
+
+in some cases the bluetooth module crashes and needs to be restarted,
+this can be handled by adding the following arguments to the docker run command:
+
+- `-cap-add=SYS_MODULE`
+- `-v /lib/modules:/lib/modules:ro`
+- `-e SYS_MODULE_TO_RELOAD="btusb"`
+
+for usb bluetooth dongles use `btusb`, on a Raspberry Pi use `hci_uart`
 
 ### Determine BLE address for your EVSE
 
@@ -109,6 +125,7 @@ bluetoothctl scan le
 ```
 
 results in something like this:
+
 ```plain
 Discovery started
 [CHG] Controller B8:27:EB:B4:51:EB Discovering: yes
@@ -116,7 +133,9 @@ Discovery started
 ```
 
 ## Caveats
+
 This library is in no means complete, when compared to the original app - some features missing:
+
 - Charging History
 - LCD Brightness
 - Password Reset
@@ -124,21 +143,22 @@ This library is in no means complete, when compared to the original app - some f
 - WiFi setup
 
 Seemingly unexpected behavior, but working as intended:
+
 - When changing the device name, the device will disconnect and the script will wait for 35 seconds, since the last received message, before reconnecting.
 
 ## Acknowledgements
 
 A big thank you to the following contributors:
 
--   [bakkers](https://github.com/bakkers) for documenting findings: https://gist.github.com/bakkerrs/cb75e3c3a337f8f38a3f84f4b49beaa5
-    
--   [johnwoo-nl](https://github.com/johnwoo-nl) for building emproto: https://github.com/johnwoo-nl/emproto/tree/main?tab=readme-ov-file
-    
--   [Phil242](https://github.com/Phil242), [FlorentVTT](https://github.com/FlorentVTT), and [DutchDevelop](https://github.com/DutchDevelop) for their original efforts in decoding the EVSE protocol
+- [bakkers](https://github.com/bakkers) for documenting findings: https://gist.github.com/bakkerrs/cb75e3c3a337f8f38a3f84f4b49beaa5
+
+- [johnwoo-nl](https://github.com/johnwoo-nl) for building emproto: https://github.com/johnwoo-nl/emproto/tree/main?tab=readme-ov-file
+
+- [Phil242](https://github.com/Phil242), [FlorentVTT](https://github.com/FlorentVTT), and [DutchDevelop](https://github.com/DutchDevelop) for their original efforts in decoding the EVSE protocol
 
 ## Tested Devices
 
--   **Besen BS20:** This library has been tested and verified to work with the Besen BS20 Electric Vehicle Charging Wallbox.
+- **Besen BS20:** This library has been tested and verified to work with the Besen BS20 Electric Vehicle Charging Wallbox.
 
 ## License
 
