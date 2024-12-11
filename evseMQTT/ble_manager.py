@@ -1,6 +1,6 @@
 import asyncio
 import logging
-from bleak import BleakScanner, BleakClient
+from bleak import BleakScanner, BleakClient, BleakError
 from .constants import Constants
 
 class BLEManager:
@@ -22,12 +22,16 @@ class BLEManager:
 
     async def scan(self):
         self.logger.info("Scanning for evse BLE devices...")
-        devices = await BleakScanner.discover()
-        self.available_devices = {dev.address: dev for dev in devices if "ACP#" in dev.name}
-        for address, device in self.available_devices.items():
-            self.logger.info(f"Found device: {device.name} ({address})")
-            self.connectiondata[address] = device
-        return self.available_devices
+        try:
+            devices = await BleakScanner.discover()
+            self.available_devices = {dev.address: dev for dev in devices if "ACP#" in dev.name}
+            for address, device in self.available_devices.items():
+                self.logger.info(f"Found device: {device.name} ({address})")
+                self.connectiondata[address] = device
+            return self.available_devices
+        except BleakError as e:
+            self.logger.error(f"BleakError during scanning: {e}")
+            await self.manager.exit_with_error()
 
     async def connect_device(self, address):
         if address in self.available_devices:
@@ -42,9 +46,12 @@ class BLEManager:
                     await self.start_notifications(address, Constants.READ_UUID)
                     self._schedule_reconnect_check()
                     return True
+                except BleakError as e:
+                    self.logger.error(f"Attempt {attempt + 1} failed with BleakError: {e}")
+                    await self.manager.exit_with_error()
                 except Exception as e:
                     self.logger.error(f"Attempt {attempt + 1} failed with error: {e}")
-                    await asyncio.sleep(2)  # Wait a bit before retrying
+                await asyncio.sleep(2)  # Wait a bit before retrying
             self.logger.error(f"Failed to connect to {address} after {self.max_retries} attempts")
             await self.manager.exit_with_error()
             return False
