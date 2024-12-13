@@ -52,7 +52,7 @@ class MQTTClient:
         self.client.publish(topic, payload, qos, retain)
 
     def publish_availability(self, identifier, state):
-        self.client.publish(f"evseMQTT/{identifier}/availability", state)
+        self.client.publish(f"evseMQTT/{identifier}/availability", state, 0, True)
         
     def publish_state(self, identifier, topic, state):
         self.client.publish(f"evseMQTT/{identifier}/state/{topic}", json.dumps(state))
