@@ -113,8 +113,8 @@ class Manager:
         
         await self.run(address)
 
-    async def exit_with_error(self):
-        self.logger.error("Exiting due to repeated connection failures.")
+    async def exit_with_error(self, error):
+        self.logger.error(f"Error encountered:\n{error}")
         # Perform necessary cleanup actions
         if self.mqtt_client:
             self.mqtt_client.publish_availability(self.device.info['serial'], "offline")

@@ -30,8 +30,7 @@ class BLEManager:
                 self.connectiondata[address] = device
             return self.available_devices
         except BleakError as e:
-            self.logger.error(f"BleakError during scanning: {e}")
-            await self.manager.exit_with_error()
+            await self.manager.exit_with_error(f"BleakError during scanning: {e}")
 
     async def connect_device(self, address):
         if address in self.available_devices:
@@ -47,16 +46,14 @@ class BLEManager:
                     self._schedule_reconnect_check()
                     return True
                 except BleakError as e:
-                    self.logger.error(f"Attempt {attempt + 1} failed with BleakError: {e}")
-                    await self.manager.exit_with_error()
+                    await self.manager.exit_with_error(f"Attempt {attempt + 1} failed with BleakError: {e}")
                 except Exception as e:
                     self.logger.error(f"Attempt {attempt + 1} failed with error: {e}")
                 await asyncio.sleep(2)  # Wait a bit before retrying
-            self.logger.error(f"Failed to connect to {address} after {self.max_retries} attempts")
-            await self.manager.exit_with_error()
+            await self.manager.exit_with_error(f"Failed to connect to {address} after {self.max_retries} attempts")
             return False
         else:
-            self.logger.error(f"Device {address} not found")
+            await self.manager.exit_with_error(f"Device {address} not found")
             return False
 
     async def start_notifications(self, address, characteristic_uuid):
