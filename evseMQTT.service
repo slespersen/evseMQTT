@@ -1,0 +1,11 @@
+[Unit]
+Description=Communicating with EVSE-based Electric Vehicle Charging Wallboxes using Bluetooth Low Energy (BLE)
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /path/to/evseMQTT/main.py --address <address> --password <password> --unit <unit> --mqtt --mqtt_broker <mqtt_broker> --mqtt_port <mqtt_port>
+WorkingDirectory=/opt/evseMQTT
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

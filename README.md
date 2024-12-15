@@ -105,6 +105,23 @@ docker run -d --name evseMQTT \
       ghcr.io/slespersen/evsemqtt:latest
 ```
 
+### Run as systemd service
+A template for a systemd service file has been provided. The arguments needs to be updated according to the, as well as the path to the library.
+
+See evseMQTT.service for details.
+
+```bash
+sudo cp /path/to/evseMQTT/evseMQTT.service /etc/systemd/system/evseMQTT.service
+
+sudo systemctl daemon-reload
+
+sudo systemctl enable evseMQTT.service
+
+sudo systemctl start evseMQTT.service
+
+sudo systemctl status evseMQTT.service
+```
+
 ### Handle bluetooth module crashes in container
 
 In some cases the bluetooth module crashes and needs to be restarted.
