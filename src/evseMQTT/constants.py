@@ -6,8 +6,8 @@ class Constants:
     # NEW BOARD BLE UUIDs
     NEW_BOARD_WRITE_UUID = "0000ffe9-0000-1000-8000-00805f9b34fb"
     NEW_BOARD_READ_UUID = "0000ffe4-0000-1000-8000-00805f9b34fb"
-    
-    
+
+
     ERRORS = {
         0: "Relay Stick Error",
         1: "Relay Stick Error",

@@ -18,7 +18,7 @@ class BLEManager:
         
         self.write_uuid = ""
         self.read_uuid = ""
-        
+
         # Ensure bleak does not go bananas, if we set logging to DEBUG
         self.logger_bleak = logging.getLogger("bleak")
         self.logger_bleak.setLevel(logging.INFO)
@@ -27,13 +27,13 @@ class BLEManager:
         self.logger.info("Scanning for evse BLE devices...")
         try:
             devices = await BleakScanner.discover(return_adv=True)
-            
+
             # Filter devices with "ACP#" in their name
             self.available_devices = {dev.address: (dev, adv_data) for dev, adv_data in devices.values() if "ACP#" in dev.name}
             for address, (device, adv_data) in self.available_devices.items():
                 self.logger.info(f"Found device: {device.name} ({address})")
                 self.connectiondata[address] = device
-                
+
                 if any("0000fff0" in uuid for uuid in adv_data.service_uuids):
                     self.logger.info(f"Device {device.name} ({device.address}) matches UUIDs for Old Board")
 
