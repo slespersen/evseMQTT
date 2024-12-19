@@ -34,19 +34,6 @@ class BLEManager:
                 self.logger.info(f"Found device: {device.name} ({address})")
                 self.connectiondata[address] = device
 
-                if any("0000fff0" in uuid for uuid in adv_data.service_uuids):
-                    self.logger.info(f"Device {device.name} ({device.address}) matches UUIDs for Old Board")
-
-                    self.write_uuid = Constants.WRITE_UUID
-                    self.read_uuid = Constants.READ_UUID
-                elif any("0000ffe4" in uuid for uuid in adv_data.service_uuids):
-                    self.logger.info(f"Device {device.name} ({device.address}) matches UUIDs for New Board")
-
-                    self.write_uuid = Constants.NEW_BOARD_WRITE_UUID
-                    self.read_uuid = Constants.NEW_BOARD_READ_UUID
-                else:
-                    self.logger.info(f"No board identified!? Service UUIDs: {adv_data.service_uuids}")
-
             return self.available_devices
 
         except BleakError as e:
@@ -60,20 +47,34 @@ class BLEManager:
                     client = BleakClient(address, timeout=65.0)
                     await client.connect()
 
+                    services = await client.get_services()
+                    characteristic_uuids = [char.uuid for service in services for char in service.characteristics]
+
+                    if any(uuid in characteristic_uuids for uuid in [Constants.WRITE_UUID, Constants.READ_UUID]):
+                        self.logger.info(f"Device ({address}) matches characteristic UUIDs for Old Board")
+                        self.write_uuid = Constants.WRITE_UUID
+                        self.read_uuid = Constants.READ_UUID
+                    elif any(uuid in characteristic_uuids for uuid in [Constants.NEW_BOARD_WRITE_UUID, Constants.NEW_BOARD_READ_UUID]):
+                        self.logger.info(f"Device ({address}) matches characteristic UUIDs for New Board")
+                        self.write_uuid = Constants.NEW_BOARD_WRITE_UUID
+                        self.read_uuid = Constants.NEW_BOARD_READ_UUID
+                    else:
+                        self.logger.warning(f"Device ({address}) does not match any expected characteristic UUIDs")
+
                     self.connected_devices[address] = client
                     self.logger.info(f"Connected to {address}")
                     await self.start_notifications(address, self.read_uuid)
                     self._schedule_reconnect_check()
                     return True
                 except BleakError as e:
-                    await self.manager.exit_with_error(f"Attempt {attempt + 1} failed with BleakError: {e}")
+                    self.logger.error(f"Attempt {attempt + 1} failed with BleakError: {e}")
                 except Exception as e:
                     self.logger.error(f"Attempt {attempt + 1} failed with error: {e}")
                 await asyncio.sleep(2)  # Wait a bit before retrying
-            await self.manager.exit_with_error(f"Failed to connect to {address} after {self.max_retries} attempts")
+            self.logger.error(f"Failed to connect to {address} after {self.max_retries} attempts")
             return False
         else:
-            await self.manager.exit_with_error(f"Device {address} not found")
+            self.logger.error(f"Device {address} not found")
             return False
 
     async def start_notifications(self, address, characteristic_uuid):
