@@ -86,6 +86,18 @@ python main.py --address "your_device_mac_address" \
                --logging_level "DEBUG"
 ```
 
+### install with pipx
+
+install [pipx](https://pipx.pypa.io/latest/installation/)
+
+```bash
+pipx ensurepath
+pipx install git+https://github.com/slespersen/evseMQTT
+
+# run
+evseMQTT --arguments
+```
+
 ### Run as container
 
 ```bash
