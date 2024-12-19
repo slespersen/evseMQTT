@@ -15,6 +15,6 @@ ADD . /app
 
 WORKDIR /app
 
-RUN apk add --no-cache bluez && pip install -r requirements.txt
+RUN apk add --no-cache bluez jq && pip install .
 
 ENTRYPOINT ["/app/entrypoint.sh"]

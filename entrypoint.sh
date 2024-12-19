@@ -1,5 +1,10 @@
 #!/usr/bin/env sh
 
+# if configured as HA addon export options to env
+if [ -f "/data/options.json" ]; then
+   export $(jq -r 'to_entries | .[] | "\(.key)=\(.value)"' "/data/options.json")
+fi
+
 MQTT_ENABLED=${MQTT_ENABLED:-"true"}
 MQTT_ARGS=""
 SYS_MODULE_TO_RELOAD=${SYS_MODULE_TO_RELOAD:-""}
@@ -24,7 +29,7 @@ fi
 
 echo "Starting evseMQTT ..."
 
-python main.py ${MQTT_ARGS} \
+/usr/local/bin/evseMQTT ${MQTT_ARGS} \
       --address "${BLE_ADDRESS}" \
       --password "${BLE_PASSWORD}" \
       --unit "${UNIT}" \

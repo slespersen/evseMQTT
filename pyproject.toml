@@ -1,10 +1,11 @@
 [project]
 name = "evseMQTT"
-version = "0.1.0"
+version = "0.0.1"
 readme = "README.md"
 license = { file = "LICENSE" }
 keywords = ["evse", "mqtt", "BESEN", "BS20", "WALLBOX", "BLE"]
 requires-python = ">=3.7"
+
 dependencies = [
     "bleak==0.20.2",
     "paho-mqtt==1.6.1"
@@ -12,3 +13,7 @@ dependencies = [
 
 [project.scripts]
 evseMQTT = "main:main"
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
