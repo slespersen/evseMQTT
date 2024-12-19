@@ -38,7 +38,7 @@ class BLEManager:
 
         except BleakError as e:
             await self.manager.exit_with_error(f"BleakError during scanning: {e}")
-
+            
     async def connect_device(self, address):
         if address in self.available_devices:
             for attempt in range(self.max_retries):
@@ -48,18 +48,17 @@ class BLEManager:
                     await client.connect()
 
                     services = await client.get_services()
-                    characteristic_uuids = [char.uuid for service in services for char in service.characteristics]
+                    service_uuids = [service.uuid for service in services]
 
-                    if any(uuid in characteristic_uuids for uuid in [Constants.WRITE_UUID, Constants.READ_UUID]):
-                        self.logger.info(f"Device ({address}) matches characteristic UUIDs for Old Board")
-                        self.write_uuid = Constants.WRITE_UUID
-                        self.read_uuid = Constants.READ_UUID
-                    elif any(uuid in characteristic_uuids for uuid in [Constants.NEW_BOARD_WRITE_UUID, Constants.NEW_BOARD_READ_UUID]):
-                        self.logger.info(f"Device ({address}) matches characteristic UUIDs for New Board")
+                    # Check service UUIDs to determine board type
+                    if any(uuid.startswith("0000ffe5-") or uuid.startswith("0000ffe0-") for uuid in service_uuids):
+                        self.logger.info(f"Device ({address}) identified as New Board")
                         self.write_uuid = Constants.NEW_BOARD_WRITE_UUID
                         self.read_uuid = Constants.NEW_BOARD_READ_UUID
                     else:
-                        self.logger.warning(f"Device ({address}) does not match any expected characteristic UUIDs")
+                        self.logger.info(f"Device ({address}) identified as Old Board")
+                        self.write_uuid = Constants.WRITE_UUID
+                        self.read_uuid = Constants.READ_UUID
 
                     self.connected_devices[address] = client
                     self.logger.info(f"Connected to {address}")
