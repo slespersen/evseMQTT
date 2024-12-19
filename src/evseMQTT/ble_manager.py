@@ -47,16 +47,16 @@ class BLEManager:
                     client = BleakClient(address, timeout=65.0)
                     await client.connect()
 
-                    services = await client.get_services()
+                    services = client.services
                     service_uuids = [service.uuid for service in services]
 
                     # Check service UUIDs to determine board type
                     if any(uuid.startswith("0000ffe5-") or uuid.startswith("0000ffe0-") for uuid in service_uuids):
-                        self.logger.info(f"Device ({address}) identified as New Board")
+                        self.logger.info(f"Device ({address}) identified as new revision")
                         self.write_uuid = Constants.NEW_BOARD_WRITE_UUID
                         self.read_uuid = Constants.NEW_BOARD_READ_UUID
                     else:
-                        self.logger.info(f"Device ({address}) identified as Old Board")
+                        self.logger.info(f"Device ({address}) identified as old revision")
                         self.write_uuid = Constants.WRITE_UUID
                         self.read_uuid = Constants.READ_UUID
 
