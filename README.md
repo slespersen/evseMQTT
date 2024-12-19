@@ -45,7 +45,7 @@ The following functions are in the making:
 install [pipx](https://pipx.pypa.io/latest/installation/)
 
 ```bash
-pipx install git+https://github.com/slespersen/evseMQTT
+sudo pipx install git+https://github.com/slespersen/evseMQTT
 sudo ln -s ~/.local/bin/evseMQTT /usr/local/bin/evseMQTT
 /usr/local/bin/evseMQTT --help
 ```
@@ -103,12 +103,26 @@ docker run -d --name evseMQTT \
 
 ### Run as systemd service
 
-A template for a systemd service file has been provided. The arguments needs to be updated according to the, as well as the path to the library.
+A systemd service file has been provided.
 
-See evseMQTT.service for details.
+you need to create the environment file `/etc/default/evseMQTT` with the following content:
 
 ```bash
-sudo cp /path/to/evseMQTT/evseMQTT.service /etc/systemd/system/evseMQTT.service
+BLE_ADDRESS=AA:BB:CC:DD:EE:FF
+BLE_PASSWORD=123456
+UNIT="W"
+MQTT_BROKER=_broker_
+MQTT_PORT=1883
+MQTT_USER=_user_
+MQTT_PASSWORD=_password_
+LOGGING_LEVEL=INFO
+```
+
+```bash
+sudo curl https://raw.githubusercontent.com/slespersen/evseMQTT/refs/heads/main/evseMQTT.service -o /etc/systemd/system/evseMQTT.service
+
+# create the config file and edit it
+sudo nano /etc/default/evseMQTT
 
 sudo systemctl daemon-reload
 
@@ -116,7 +130,7 @@ sudo systemctl enable evseMQTT.service
 
 sudo systemctl start evseMQTT.service
 
-sudo systemctl status evseMQTT.service
+sudo journalctl -f -u evseMQTT
 ```
 
 ### Handle bluetooth module crashes in container
