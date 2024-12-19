@@ -2,6 +2,7 @@
 
 # if configured as HA addon export options to env
 if [ -f "/data/options.json" ]; then
+   echo "/data/options.json file found -> parsing options"
    export $(jq -r 'to_entries | .[] | "\(.key)=\(.value)"' "/data/options.json")
 fi
 

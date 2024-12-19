@@ -40,23 +40,19 @@ The following functions are in the making:
 - **Automatic Temperature Unit Update**: Automatically updating of the enabled and disabled temperature unit sensor in Home Assistant to not pollute the different statistics.
 - **Additional Status Messages**: Additional messages for both charge_start and charge_stop.
 
-## Installation
+## Installation with pipx
 
-Since `evseMQTT` is not yet available on pip, it needs to be installed manually. Follow these steps:
+install [pipx](https://pipx.pypa.io/latest/installation/)
 
-1. Clone the repository:
-    ```bash
-    git clone https://github.com/slespersen/evseMQTT.git
-    ```
-
-2. Create a symbolic link to your Python library directory:
-    ```bash
-    ln -s /path/to/evseMQTT /path/to/your/python/lib
-    ```
+```bash
+pipx install git+https://github.com/slespersen/evseMQTT
+sudo ln -s ~/.local/bin/evseMQTT /usr/local/bin/evseMQTT
+/usr/local/bin/evseMQTT --help
+```
 
 ## Usage
 
-`main.py` is provided for running the library. Below are the arguments it accepts:
+`evseMQTT` is provided for running the library. Below are the arguments it accepts:
 
 ### Arguments
 
@@ -75,7 +71,7 @@ Since `evseMQTT` is not yet available on pip, it needs to be installed manually.
 Here's an example of how to run `main.py` with the necessary arguments:
 
 ```bash
-python main.py --address "your_device_mac_address" \
+evseMQTT --address "your_device_mac_address" \
                --password "your_6_digit_pin" \
                --unit "W" \
                --mqtt \
@@ -84,18 +80,6 @@ python main.py --address "your_device_mac_address" \
                --mqtt_user "your_mqtt_username" \
                --mqtt_password "your_mqtt_password" \
                --logging_level "DEBUG"
-```
-
-### install with pipx
-
-install [pipx](https://pipx.pypa.io/latest/installation/)
-
-```bash
-pipx ensurepath
-pipx install git+https://github.com/slespersen/evseMQTT
-
-# run
-evseMQTT --arguments
 ```
 
 ### Run as container
@@ -118,6 +102,7 @@ docker run -d --name evseMQTT \
 ```
 
 ### Run as systemd service
+
 A template for a systemd service file has been provided. The arguments needs to be updated according to the, as well as the path to the library.
 
 See evseMQTT.service for details.
