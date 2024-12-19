@@ -33,6 +33,8 @@ Additionally, `evseMQTT` allows you to read:
 
 `evseMQTT` exposes basic control functionalities to Home Assistant via MQTT Discovery, enabling seamless integration and control within your home automation setup.
 
+[![](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fmoryoav%2Fevsemqtt-ha)
+
 ## Upcoming features
 
 The following functions are in the making:
