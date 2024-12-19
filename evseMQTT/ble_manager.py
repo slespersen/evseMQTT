@@ -16,6 +16,9 @@ class BLEManager:
         self.message_timeout = 35  # 35 seconds timeout for message reception
         self.max_retries = 5  # Maximum number of retries for connection
         
+        self.write_uuid = ""
+        self.read_uuid = ""
+        
         # Ensure bleak does not go bananas, if we set logging to DEBUG
         self.logger_bleak = logging.getLogger("bleak")
         self.logger_bleak.setLevel(logging.INFO)
@@ -23,12 +26,29 @@ class BLEManager:
     async def scan(self):
         self.logger.info("Scanning for evse BLE devices...")
         try:
-            devices = await BleakScanner.discover()
-            self.available_devices = {dev.address: dev for dev in devices if "ACP#" in dev.name}
-            for address, device in self.available_devices.items():
+            devices = await BleakScanner.discover(return_adv=True)
+            
+            # Filter devices with "ACP#" in their name
+            self.available_devices = {dev.address: (dev, adv_data) for dev, adv_data in devices.values() if "ACP#" in dev.name}
+            for address, (device, adv_data) in self.available_devices.items():
                 self.logger.info(f"Found device: {device.name} ({address})")
                 self.connectiondata[address] = device
+                
+                if any("0000fff0" in uuid for uuid in adv_data.service_uuids):
+                    self.logger.info(f"Device {device.name} ({device.address}) matches UUIDs for Old Board")
+
+                    self.write_uuid = Constants.WRITE_UUID
+                    self.read_uuid = Constants.READ_UUID
+                elif any("0000ffe4" in uuid for uuid in adv_data.service_uuids):
+                    self.logger.info(f"Device {device.name} ({device.address}) matches UUIDs for New Board")
+
+                    self.write_uuid = Constants.NEW_BOARD_WRITE_UUID
+                    self.read_uuid = Constants.NEW_BOARD_READ_UUID
+                else:
+                    self.logger.info(f"No board identified!? Service UUIDs: {adv_data.service_uuids}")
+
             return self.available_devices
+
         except BleakError as e:
             await self.manager.exit_with_error(f"BleakError during scanning: {e}")
 
@@ -42,7 +62,7 @@ class BLEManager:
 
                     self.connected_devices[address] = client
                     self.logger.info(f"Connected to {address}")
-                    await self.start_notifications(address, Constants.READ_UUID)
+                    await self.start_notifications(address, self.read_uuid)
                     self._schedule_reconnect_check()
                     return True
                 except BleakError as e:
@@ -77,7 +97,7 @@ class BLEManager:
             client = self.connected_devices[address]
 
             if client.is_connected:
-                await client.stop_notify(Constants.READ_UUID)
+                await client.stop_notify(self.read_uuid)
 
             await client.disconnect()
             del self.connected_devices[address]

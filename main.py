@@ -48,7 +48,7 @@ class Manager:
             self.logger.info(f"Connected.")
             
             # Start the producer and consumer tasks
-            consumer = asyncio.create_task(self.ble_manager.message_consumer(address, Constants.WRITE_UUID))
+            consumer = asyncio.create_task(self.ble_manager.message_consumer(address, self.ble_manager.write_uuid))
             
             try:
                 self.logger.info("Waiting for device initialization...")
