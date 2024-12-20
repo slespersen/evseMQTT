@@ -80,30 +80,33 @@ class EventHandlers:
                         
                         self.device.charge = data
                         
-                    # Update device info if command 262 is received
+                    # Device charge status -- not sure what we need these for
                     if cmd in [5, 6]:
                         self.logger.info(f"Device sent a charge status")
                         
+                    # Device responded to charge_start
                     if cmd == 7:
                         self.logger.info(f"Device responded to charge_start: {data}")
                         
+                    # Device responded to charge_stop
                     if cmd == 8:
                         self.logger.info(f"Device responded to charge_stop: {data}")
                     
-                    # Update device info if command 262 is received
+                    # Device sent a charge record -- not sure what we need these for
                     if cmd in [9, 10]:
                         self.logger.info(f"Device sent a charge record")
 
                     # Update device info if command 262 is received
                     if cmd == 262:
-                        self.logger.info(f"Device respondded with {cmd}, containing {data}")
+                        self.logger.info(f"Device responded with {cmd}, containing {data}")
                         self.device.info = data
 
                     # Update device config if command is related
                     if cmd in [257, 263, 264, 271, 274]:
-                        self.logger.info(f"Device respondded with {cmd}, containing {data}")
+                        self.logger.info(f"Device responded with {cmd}, containing {data}")
                         self.device.config = data
-                        
+                     
+                    # Device did not accept the password -- log error
                     if cmd == 341:
                         self.logger.error(f"Password was not accepted by device!")
                 
