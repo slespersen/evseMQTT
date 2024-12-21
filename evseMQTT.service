@@ -6,6 +6,7 @@ After=network.target dbus.service
 EnvironmentFile=/etc/default/evseMQTT
 ExecStart=/usr/local/bin/evseMQTT --address ${BLE_ADDRESS} --password ${BLE_PASSWORD} --unit ${UNIT} --mqtt --mqtt_broker ${MQTT_BROKER} --mqtt_port ${MQTT_PORT} --mqtt_user ${MQTT_USER} --mqtt_password ${MQTT_PASSWORD} --logging_level ${LOGGING_LEVEL}
 Restart=always
+RestartSec=10
 
 [Install]
 WantedBy=multi-user.target
