@@ -262,7 +262,7 @@ class MQTTPayloads:
                 "payload_available": "online",
                 "payload_not_available": "offline",
                 "unit_of_measurement": "A",
-                "min": 1, 
+                "min": 6, 
                 "max": self.device.info['output_max_amps'], 
                 "step": 1, 
                 "command_template": "{\"charge_amps\": {{ value }} }",
