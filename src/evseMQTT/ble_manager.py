@@ -70,10 +70,10 @@ class BLEManager:
                 except Exception as e:
                     self.logger.error(f"Attempt {attempt + 1} failed with error: {e}")
                 await asyncio.sleep(2)  # Wait a bit before retrying
-            self.logger.error(f"Failed to connect to {address} after {self.max_retries} attempts")
+            await self.manager.exit_with_error(f"Failed to connect to {address} after {self.max_retries} attempts")
             return False
         else:
-            self.logger.error(f"Device {address} not found")
+            await self.manager.exit_with_error(f"Device {address} not found")
             return False
 
     async def start_notifications(self, address, characteristic_uuid):
@@ -85,6 +85,7 @@ class BLEManager:
             return True
         else:
             self.logger.error(f"Device {address} not connected")
+            await self.manager.exit_with_error(f"Device {address} not connected")
             return False
 
     async def _handle_notification_wrapper(self, sender, data):
@@ -116,6 +117,7 @@ class BLEManager:
             return data
         else:
             self.logger.error(f"Device {address} not connected")
+            await self.manager.exit_with_error(f"Device {address} not connected")
             return None
 
     async def write_characteristic(self, address, characteristic_uuid, data):
@@ -126,7 +128,7 @@ class BLEManager:
             self.logger.info(f"Write complete")
             return True
         else:
-            self.logger.error(f"Device {address} not connected")
+            await self.manager.exit_with_error(f"Device {address} not connected")
             return False
 
     async def heartbeat(self, interval):
