@@ -315,7 +315,7 @@ class MQTTPayloads:
                 "device_type": "sensor",
                 "enabled_by_default": True if self.device.rssi else False,
                 "unique_id": f"{self.device.info['serial']}",
-                "state_topic": f"evseMQTT/{self.device.info['serial']}/state",
+                "state_topic": f"evseMQTT/{self.device.info['serial']}/state/config",
                 "availability_topic": f"evseMQTT/{self.device.info['serial']}/availability",
                 "payload_available": "online",
                 "payload_not_available": "offline",
