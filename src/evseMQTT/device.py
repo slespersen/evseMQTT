@@ -4,6 +4,7 @@ class Device:
         self.ble_password = "123456"
         self.ble_user_id = [101, 118, 115, 101, 77, 81, 84, 84, 0, 0, 0, 0, 0, 0, 0, 0] # evseMQTT in ascii 16 bytes
         self.unit = "W"
+        self.rssi = False
         self._type = None
         self._phases = None
         self._manufacturer = None
@@ -70,6 +71,7 @@ class Device:
         self._system_time_raw = None
         self._temperature_unit = None
         self._device_name = None
+        self._rssi = -255
         
 
     @property
@@ -93,6 +95,7 @@ class Device:
     def config(self):
         return {
             'charge_amps': self._charge_amps,
+            'rssi': self._rssi,
             'lcd_brightness': self._lcd_brightness,
             'system_time': self._system_time,
             'system_time_raw': self._system_time_raw,

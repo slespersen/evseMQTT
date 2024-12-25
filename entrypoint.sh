@@ -34,4 +34,5 @@ echo "Starting evseMQTT ..."
       --address "${BLE_ADDRESS}" \
       --password "${BLE_PASSWORD}" \
       --unit "${UNIT}" \
+      --rssi "${RSSI}" \
       --logging_level "${LOGGING_LEVEL}"

@@ -309,6 +309,20 @@ class MQTTPayloads:
                 "value_template": "{{ value_json.l1_amperage }}",
                 "entity_category": "diagnostic"
             },
+            "rssi": {
+                "name": "RSSI",
+                "device_class": "signal_strength",
+                "device_type": "sensor",
+                "enabled_by_default": True if self.device.rssi else False,
+                "unique_id": f"{self.device.info['serial']}",
+                "state_topic": f"evseMQTT/{self.device.info['serial']}/state",
+                "availability_topic": f"evseMQTT/{self.device.info['serial']}/availability",
+                "payload_available": "online",
+                "payload_not_available": "offline",
+                "unit_of_measurement": "dBm",
+                "value_template": "{{ value_json.rssi }}",
+                "entity_category": "diagnostic"
+            },
         }
         
         self.phase_entities = {

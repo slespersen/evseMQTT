@@ -8,6 +8,7 @@ ENV BLE_ADDRESS="" \
     MQTT_PORT="1883" \
     MQTT_USER="" \
     MQTT_PASSWORD="" \
+    RSSI="" \
     LOGGING_LEVEL="INFO" \
     SYS_MODULE_TO_RELOAD=""
 

@@ -5,13 +5,18 @@ import sys
 from evseMQTT import BLEManager, Constants, Device, EventHandlers, Commands, Logger, MQTTClient, MQTTCallback, MQTTPayloads, Utils
 
 class Manager:
-    def __init__(self, address, ble_password, unit, mqtt_enabled=False, mqtt_settings=None, logging_level=logging.INFO):
+    def __init__(self, address, ble_password, unit, mqtt_enabled=False, mqtt_settings=None, logging_level=logging.INFO, rssi=False):
         self.setup_logging(logging_level)
         self.logger = logging.getLogger("evseMQTT")
         debug = logging_level == logging.DEBUG  # Determine if debug logging is enabled
         
         self.device = Device(address)
+        
+        # Set the energy consumption unit
         self.device.unit = unit
+        
+        # Set the energy consumption unit
+        self.device.rssi = rssi
         
         # Set the BLE password
         self.device.ble_password = ble_password
@@ -30,6 +35,7 @@ class Manager:
         self.mqtt_client = None
         self.mqtt_callback = None
         self.mqtt_payloads = None
+       # self.rssi = rssi
 
         if mqtt_enabled and mqtt_settings:
             self.mqtt_client = MQTTClient(logger=self.logger, **mqtt_settings)
@@ -84,7 +90,10 @@ class Manager:
                     
                     # Post online to availability topic
                     self.mqtt_client.publish_availability(self.device.info['serial'], "online")
-                                        
+                
+                if self.device.rssi:
+                    heartbeat = asyncio.create_task(self.ble_manager.heartbeat(60, address))
+                
                 while True:                
                     await asyncio.sleep(1)  # Example interval for ad-hoc message sending
                     self.logger.debug(f"Idling...")
@@ -140,6 +149,7 @@ def main():
     parser.add_argument("--mqtt_port", type=int, help="MQTT broker port")
     parser.add_argument("--mqtt_user", type=str, help="MQTT username")
     parser.add_argument("--mqtt_password", type=str, help="MQTT password")
+    parser.add_argument("--rssi", action='store_true', help="Monitor Received Signal Strength Indicator")
     parser.add_argument("--logging_level", type=str, default="INFO", help="Logging level (DEBUG, INFO, WARNING, ERROR, CRITICAL)")
     args = parser.parse_args()
 
@@ -152,7 +162,7 @@ def main():
     } if args.mqtt else None
 
     logging_level = getattr(logging, args.logging_level.upper(), logging.INFO)
-    manager = Manager(args.address, ble_password=args.password, unit=args.unit, mqtt_enabled=args.mqtt, mqtt_settings=mqtt_settings, logging_level=logging_level)
+    manager = Manager(args.address, ble_password=args.password, unit=args.unit, mqtt_enabled=args.mqtt, mqtt_settings=mqtt_settings, rssi=args.rssi, logging_level=logging_level)
     asyncio.run(manager.run(args.address))
 
 if __name__ == "__main__":

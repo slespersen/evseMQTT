@@ -23,13 +23,17 @@ class BLEManager:
         self.logger_bleak = logging.getLogger("bleak")
         self.logger_bleak.setLevel(logging.INFO)
 
-    async def scan(self):
+    async def scan(self, device_addr = False):
         self.logger.info("Scanning for evse BLE devices...")
         try:
             devices = await BleakScanner.discover(return_adv=True)
 
             # Filter devices with "ACP#" in their name
             self.available_devices = {dev.address: (dev, adv_data) for dev, adv_data in devices.values() if "ACP#" in dev.name}
+            
+            if device_addr:
+                return self.available_devices[device_addr][1].rssi
+
             for address, (device, adv_data) in self.available_devices.items():
                 self.logger.info(f"Found device: {device.name} ({address})")
                 self.connectiondata[address] = device
@@ -63,6 +67,8 @@ class BLEManager:
                     self.connected_devices[address] = client
                     self.logger.info(f"Connected to {address}")
                     await self.start_notifications(address, self.read_uuid)
+                                        
+                    self.event_handler.device.config = {"rssi": self.available_devices[address][1].rssi}
                     self._schedule_reconnect_check()
                     return True
                 except BleakError as e:
@@ -131,16 +137,12 @@ class BLEManager:
             await self.manager.exit_with_error(f"Device {address} not connected")
             return False
 
-    async def heartbeat(self, interval):
+    async def heartbeat(self, interval, address):
         while True:
-            for address in list(self.connected_devices.keys()):
-                try:
-                    if asyncio.get_event_loop().time() - self.last_message_time > self.message_timeout:
-                        self.logger.warning(f"No message received in the last {self.message_timeout} seconds. Requesting manager to restart.")
-                        await self.manager.restart_run(address)
-                    await asyncio.sleep(interval)
-                except Exception as e:
-                    self.logger.error(f"Error during heartbeat: {e}")
+            self.logger.info(f"Retrieving RSSI for device {address}")
+            rssi = await self.scan(address)
+            self.event_handler.device.config = {"rssi": rssi}
+            await asyncio.sleep(interval)
 
     async def message_consumer(self, address, characteristic_uuid):
         while True:

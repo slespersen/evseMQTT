@@ -66,6 +66,7 @@ sudo ln -s ~/.local/bin/evseMQTT /usr/local/bin/evseMQTT
 - `--mqtt_port`: (Optional) The MQTT broker port.
 - `--mqtt_user`: (Optional) The MQTT username.
 - `--mqtt_password`: (Optional) The MQTT password.
+- `--rssi`: (Optional) Monitor Received Signal Strength Indicator. Default is false.
 - `--logging_level`: (Optional) The logging level. Default is "INFO".
 
 ### Example Command
