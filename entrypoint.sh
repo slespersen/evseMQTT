@@ -7,11 +7,15 @@ if [ -f "/data/options.json" ]; then
 fi
 
 MQTT_ENABLED=${MQTT_ENABLED:-"true"}
-MQTT_ARGS=""
+EXTRA_ARGS=""
 SYS_MODULE_TO_RELOAD=${SYS_MODULE_TO_RELOAD:-""}
 
 if [ "${MQTT_ENABLED}" = "true" ]; then
-    MQTT_ARGS="--mqtt --mqtt_broker ${MQTT_BROKER} --mqtt_port ${MQTT_PORT} --mqtt_user ${MQTT_USER} --mqtt_password ${MQTT_PASSWORD}"
+    EXTRA_ARGS="--mqtt --mqtt_broker ${MQTT_BROKER} --mqtt_port ${MQTT_PORT} --mqtt_user ${MQTT_USER} --mqtt_password ${MQTT_PASSWORD}"
+fi
+
+if [ -n "${RSSI}" ]; then
+  EXTRA_ARGS="${EXTRA_ARGS} --rssi"
 fi
 
 if [ -n "${SYS_MODULE_TO_RELOAD}" ]; then
@@ -30,9 +34,11 @@ fi
 
 echo "Starting evseMQTT ..."
 
-/usr/local/bin/evseMQTT ${MQTT_ARGS} \
+set -ex
+
+/usr/local/bin/evseMQTT \
       --address "${BLE_ADDRESS}" \
       --password "${BLE_PASSWORD}" \
       --unit "${UNIT}" \
-      --rssi "${RSSI}" \
-      --logging_level "${LOGGING_LEVEL}"
+      --logging_level "${LOGGING_LEVEL}" \
+      ${EXTRA_ARGS}
