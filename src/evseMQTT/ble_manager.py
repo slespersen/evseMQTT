@@ -60,7 +60,7 @@ class BLEManager:
                         self.write_uuid = Constants.NEW_BOARD_WRITE_UUID
                         self.read_uuid = Constants.NEW_BOARD_READ_UUID
                     elif any(uuid.startswith("0003cdd2-") or uuid.startswith("0003cdd1-") for uuid in service_uuids):
-                        self.logger.info(f"Device ({address}) identified as revised revision")
+                        self.logger.info(f"Device ({address}) identified as other revision")
                         self.write_uuid = Constants.REV_WRITE_UUID
                         self.read_uuid = Constants.REV_READ_UUID
                     else:
