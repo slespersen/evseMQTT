@@ -18,8 +18,8 @@ class EventHandlers:
             6: Parsers.charge_status,
             7: Parsers.charge_start,
             8: Parsers.charge_stop,
-            9: Parsers.charge_record,
-            10: Parsers.charge_record,
+            #9: Parsers.charge_record,
+            #10: Parsers.charge_record,
             13: Parsers.single_ac_status,
             257: Parsers.system_time,
             262: Parsers.version,
@@ -93,8 +93,8 @@ class EventHandlers:
                         self.logger.info(f"Device responded to charge_stop: {data}")
                     
                     # Device sent a charge record -- not sure what we need these for
-                    if cmd in [9, 10]:
-                        self.logger.info(f"Device sent a charge record")
+                    #if cmd in [9, 10]:
+                    #    self.logger.info(f"Device sent a charge record")
 
                     # Update device info if command 262 is received
                     if cmd == 262:
