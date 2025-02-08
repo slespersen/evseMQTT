@@ -83,7 +83,7 @@ class Device:
             'manufacturer': self._manufacturer,
             'model': self._model,
             'hardware_version': self._hardware_version,
-            'software_version': self._software_version,
+            'software_version': self._software_version if self._software_version is not None else self._hardware_version,
             'output_power': self._output_power,
             'output_max_amps': self._output_max_amps,
             'feature': self._feature,

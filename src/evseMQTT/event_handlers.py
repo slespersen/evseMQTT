@@ -116,7 +116,8 @@ class EventHandlers:
                     await self.commands.set_charge_fee()
                     await self.commands.set_charge_service_fee()
                     
-                if cmd == 2 and self.device.info['software_version'] is None:
+                #if cmd == 2 and self.device.info['software_version'] is None:
+                if cmd == 2:
                     self.logger.info(f"Device sent response to login request - confirming login")
                     await self.commands.login_confirm()
                     await self.commands.get_config_temperature_unit()

@@ -1,6 +1,7 @@
 import argparse
 import asyncio
 import logging
+import signal
 import sys
 from evseMQTT import BLEManager, Constants, Device, EventHandlers, Commands, Logger, MQTTClient, MQTTCallback, MQTTPayloads, Utils
 
@@ -15,7 +16,7 @@ class Manager:
         # Set the energy consumption unit
         self.device.unit = unit
         
-        # Set the energy consumption unit
+        # Set the RSSI monitoring
         self.device.rssi = rssi
         
         # Set the BLE password
@@ -68,8 +69,13 @@ class Manager:
                 while self.device.info['software_version'] is None:
                     self.logger.info(f"Waiting for software version...")
                     await asyncio.sleep(1)
-                                        
-                if self.mqtt_client and not self.mqtt_client.connected:
+                
+                # Ensure that the following are true:
+                #   - the MQTT client is required
+                #   - the MQTT client is not already connected
+                #   - the EVSE serial has been retrieved
+                #   - the EVSE software_version has been retrieved
+                if self.mqtt_client and not self.mqtt_client.connected and self.device.info['serial'] is not None and self.device.info['software_version'] is not None:
                     # Setup the MQTT payloads
                     self.mqtt_payloads = MQTTPayloads(device=self.device)
                     
@@ -98,7 +104,7 @@ class Manager:
                     await asyncio.sleep(1)  # Example interval for ad-hoc message sending
                     self.logger.debug(f"Idling...")
 
-            except KeyboardInterrupt:
+            except (KeyboardInterrupt, SystemExit):
                 # Handling cleanup on keyboard interrupt
                 self.logger.info("Interrupted, cleaning up...")            
                 
@@ -106,10 +112,18 @@ class Manager:
                 await self.ble_manager.queue.join()
                 await self.ble_manager.disconnect_device(address)
             finally:
-                if self.mqtt_client:
-                    self.mqtt_client.publish_availability(self.device.info['serial'], "offline")
-                    self.mqtt_client.disconnect()
+                self.cleanup()
 
+    def cleanup(self):
+        if self.mqtt_client:
+            self.mqtt_client.publish_availability(self.device.info['serial'], "offline")
+            self.mqtt_client.disconnect()
+
+    def handle_exit(self, signum, frame):
+        self.logger.info(f"Signal {signal.Signals(signum).name} received, cleaning up...")
+        self.cleanup()
+        sys.exit(0)
+        
     async def restart_run(self, address=None):
         if address is None:
             address = self.address
@@ -160,9 +174,15 @@ def main():
         "username": args.mqtt_user,
         "password": args.mqtt_password
     } if args.mqtt else None
-
+    
     logging_level = getattr(logging, args.logging_level.upper(), logging.INFO)
     manager = Manager(args.address, ble_password=args.password, unit=args.unit, mqtt_enabled=args.mqtt, mqtt_settings=mqtt_settings, rssi=args.rssi, logging_level=logging_level)
+    
+    # Register signal handlers for common termination signals
+    signals = [signal.SIGINT, signal.SIGTERM, signal.SIGQUIT, signal.SIGABRT]
+    for sig in signals:
+        signal.signal(sig, manager.handle_exit)
+    
     asyncio.run(manager.run(args.address))
 
 if __name__ == "__main__":
