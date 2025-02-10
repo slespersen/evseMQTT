@@ -31,7 +31,7 @@ class Parsers:
 
     def version(data, identifier):
         return {
-            "hardware_version": data[0:15].decode('utf-8').strip(),
+            "hardware_version": data[0:15].decode('utf-8'),
             "software_version": data[16:31].decode('utf-8').strip("\u0000"),
             "feature": Utils.bytes_to_long_little(data[32:36]),
         }

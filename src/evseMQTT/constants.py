@@ -1,4 +1,6 @@
 class Constants:
+    PACKET_HEADER = "0601"
+
     # BLE UUIDs
     WRITE_UUID = "0000fff2-0000-1000-8000-00805f9b34fb"
     READ_UUID = "0000fff1-0000-1000-8000-00805f9b34fb"

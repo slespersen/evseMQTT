@@ -100,7 +100,7 @@ class BLEManager:
 
     async def _handle_notification_wrapper(self, sender, data):
         self.last_message_time = asyncio.get_event_loop().time()
-        await self.event_handler.handle_notification(sender, data)
+        await self.event_handler.receive_notification(sender, data)
 
     async def disconnect_device(self, address):
         if address in self.connected_devices:

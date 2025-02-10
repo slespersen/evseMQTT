@@ -289,3 +289,14 @@ class Utils:
         # Round to 2 decimal places
         rounded_temp = round(converted_temp, 2)
         return rounded_temp
+        
+    @staticmethod
+    def get_bytes(byte_array, start, end):
+        if byte_array is None:
+            return None
+        if start < 0 or start >= len(byte_array) or end < 0 or end >= len(byte_array):
+            return None
+        if start > end:
+            return None
+        
+        return byte_array[start:end+1]

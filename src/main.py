@@ -132,6 +132,7 @@ class Manager:
 
         # Reset initialization_state and software_version
         self.device.initialization_state = False
+        self.device.logged_in = False
         self.device.info = {'software_version': None}
         
         await self.run(address)

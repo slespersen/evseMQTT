@@ -1,6 +1,7 @@
 class Device:
     def __init__(self, mac):
         self.initialization_state = False
+        self.logged_in = False
         self.ble_password = "123456"
         self.ble_user_id = [101, 118, 115, 101, 77, 81, 84, 84, 0, 0, 0, 0, 0, 0, 0, 0] # evseMQTT in ascii 16 bytes
         self.unit = "W"
@@ -83,7 +84,7 @@ class Device:
             'manufacturer': self._manufacturer,
             'model': self._model,
             'hardware_version': self._hardware_version,
-            'software_version': self._software_version if self._software_version is not None else self._hardware_version,
+            'software_version': self._software_version,
             'output_power': self._output_power,
             'output_max_amps': self._output_max_amps,
             'feature': self._feature,
