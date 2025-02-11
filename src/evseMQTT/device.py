@@ -2,6 +2,7 @@ class Device:
     def __init__(self, mac):
         self.initialization_state = False
         self.logged_in = False
+        self.fallback = False
         self.ble_password = "123456"
         self.ble_user_id = [101, 118, 115, 101, 77, 81, 84, 84, 0, 0, 0, 0, 0, 0, 0, 0] # evseMQTT in ascii 16 bytes
         self.unit = "W"

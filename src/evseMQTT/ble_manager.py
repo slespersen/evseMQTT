@@ -63,6 +63,7 @@ class BLEManager:
                         self.logger.info(f"Device ({address}) identified as other revision")
                         self.write_uuid = Constants.REV_WRITE_UUID
                         self.read_uuid = Constants.REV_READ_UUID
+                        self.event_handler.device.fallback = True
                     else:
                         self.logger.info(f"Device ({address}) identified as old revision")
                         self.write_uuid = Constants.WRITE_UUID
