@@ -68,7 +68,7 @@ class Manager:
                 
                 if self.device.fallback:
                     self.logger.info(f"Fallback: software_version populated with hardware_version.")
-                    self.device.config = {'software_version': self.device.config['hardware_version']}
+                    self.device.info = {'software_version': self.device.info['hardware_version']}
                 
                 while self.device.info['software_version'] is None:
                     self.logger.info(f"Waiting for software version...")
