@@ -160,7 +160,7 @@ class Commands:
     
     async def set_config_password(self, password):
         if len(password) != 6:
-            self.logger.info(f"Incorret PIN length -- it should be exactly 6 digits. No more, no less.")
+            self.logger.warning(f"Incorrect PIN length -- it should be exactly 6 digits. No more, no less.")
             return
         
         # Convert the integer to a string to process each digit 

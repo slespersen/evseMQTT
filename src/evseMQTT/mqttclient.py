@@ -35,7 +35,7 @@ class MQTTClient:
         self.logger.info(f"Subscribed with QoS: {granted_qos}")
 
     def on_publish(self, client, userdata, mid):
-        self.logger.info(f"Message published: {mid}")
+        self.logger.debug(f"Message published: {mid}")
 
     def connect(self):
         self.client.connect(self.broker, self.port, self.keepalive)

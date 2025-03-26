@@ -323,6 +323,18 @@ class MQTTPayloads:
                 "value_template": "{{ value_json.rssi }}",
                 "entity_category": "diagnostic"
             },
+            "version": {
+                "name": "evseMQTT Version",
+                "device_type": "sensor",
+                "icon": "mdi:code-tags",
+                "unique_id": f"{self.device.info['serial']}",
+                "state_topic": f"evseMQTT/{self.device.info['serial']}/state/config",
+                "availability_topic": f"evseMQTT/{self.device.info['serial']}/availability",
+                "payload_available": "online",
+                "payload_not_available": "offline",
+                "value_template": "{{ value_json.version }}",
+                "entity_category": "diagnostic"
+            },
         }
         
         self.phase_entities = {

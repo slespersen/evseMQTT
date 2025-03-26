@@ -1,3 +1,5 @@
+from .constants import Constants
+
 class Device:
     def __init__(self, mac):
         self.initialization_state = False
@@ -7,6 +9,7 @@ class Device:
         self.ble_user_id = [101, 118, 115, 101, 77, 81, 84, 84, 0, 0, 0, 0, 0, 0, 0, 0] # evseMQTT in ascii 16 bytes
         self.unit = "W"
         self.rssi = False
+        self._version = Constants.VERSION
         self._type = None
         self._phases = None
         self._manufacturer = None
@@ -104,6 +107,7 @@ class Device:
             'temperature_unit': self._temperature_unit,
             'language': self._language,
             'device_name': self._device_name,
+            'version': self._version
         }
         
     @property

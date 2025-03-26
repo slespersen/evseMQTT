@@ -56,16 +56,16 @@ class BLEManager:
 
                     # Check service UUIDs to determine board type
                     if any(uuid.startswith("0000ffe5-") or uuid.startswith("0000ffe0-") for uuid in service_uuids):
-                        self.logger.info(f"Device ({address}) identified as new revision")
+                        self.logger.debug(f"Device ({address}) identified as new revision")
                         self.write_uuid = Constants.NEW_BOARD_WRITE_UUID
                         self.read_uuid = Constants.NEW_BOARD_READ_UUID
                     elif any(uuid.startswith("0003cdd0-") for uuid in service_uuids):
-                        self.logger.info(f"Device ({address}) identified as other revision")
+                        self.logger.debug(f"Device ({address}) identified as other revision")
                         self.write_uuid = Constants.REV_WRITE_UUID
                         self.read_uuid = Constants.REV_READ_UUID
                         self.event_handler.device.fallback = True
                     else:
-                        self.logger.info(f"Device ({address}) identified as old revision")
+                        self.logger.debug(f"Device ({address}) identified as old revision")
                         self.write_uuid = Constants.WRITE_UUID
                         self.read_uuid = Constants.READ_UUID
 
@@ -89,10 +89,10 @@ class BLEManager:
 
     async def start_notifications(self, address, characteristic_uuid):
         if address in self.connected_devices:
-            self.logger.info(f"Starting notifications for {characteristic_uuid} on {address}")
+            self.logger.debug(f"Starting notifications for {characteristic_uuid} on {address}")
             client = self.connected_devices[address]
             await client.start_notify(characteristic_uuid, self._handle_notification_wrapper)
-            self.logger.info(f"Notifications started for {characteristic_uuid} on {address}")
+            self.logger.debug(f"Notifications started for {characteristic_uuid} on {address}")
             return True
         else:
             self.logger.error(f"Device {address} not connected")
@@ -121,10 +121,10 @@ class BLEManager:
 
     async def read_characteristic(self, address, characteristic_uuid):
         if address in self.connected_devices:
-            self.logger.info(f"Reading characteristic {characteristic_uuid} from {address}")
+            self.logger.debug(f"Reading characteristic {characteristic_uuid} from {address}")
             client = self.connected_devices[address]
             data = await client.read_gatt_char(characteristic_uuid)
-            self.logger.info(f"Read data: {data}")
+            self.logger.debug(f"Read data: {data}")
             return data
         else:
             self.logger.error(f"Device {address} not connected")
@@ -133,10 +133,10 @@ class BLEManager:
 
     async def write_characteristic(self, address, characteristic_uuid, data):
         if address in self.connected_devices:
-            self.logger.info(f"Writing to characteristic {characteristic_uuid} on {address}")
+            self.logger.debug(f"Writing to characteristic {characteristic_uuid} on {address}")
             client = self.connected_devices[address]
             await client.write_gatt_char(characteristic_uuid, data)
-            self.logger.info(f"Write complete")
+            self.logger.debug(f"Write complete")
             return True
         else:
             await self.manager.exit_with_error(f"Device {address} not connected")
@@ -144,7 +144,7 @@ class BLEManager:
 
     async def heartbeat(self, interval, address):
         while True:
-            self.logger.info(f"Retrieving RSSI for device {address}")
+            self.logger.debug(f"Retrieving RSSI for device {address}")
             rssi = await self.scan(address)
             self.event_handler.device.config = {"rssi": rssi}
             await asyncio.sleep(interval)

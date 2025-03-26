@@ -45,7 +45,7 @@ class EventHandlers:
         }
         
     async def receive_notification(self, sender, byte_array):
-        self.logger.info(f"Notification from {sender}: {byte_array}")
+        self.logger.debug(f"Notification from {sender}: {byte_array}")
 
         packet_header = Constants.PACKET_HEADER
         if Utils.byte_to_string(byte_array[:2] if len(byte_array) >= 2 else byte_array[:1]) == packet_header:
@@ -127,7 +127,7 @@ class EventHandlers:
         #parsed_data = Utils.parse_bytearray(segment)
         parsed_data = Utils.parse_bytearray(message)
         cmd = parsed_data['cmd']
-        self.logger.info(f"Received command {cmd}")
+        self.logger.debug(f"Received command {cmd}")
         
         self.logger.debug(f"Parsed data:\n{parsed_data}")
         
@@ -171,11 +171,11 @@ class EventHandlers:
             #    self.logger.info(f"Device sent a charge record")
             # Update device info if command 262 is received
             if cmd == 262:
-                self.logger.info(f"Device responded with {cmd}, containing {data}")
+                self.logger.debug(f"Device responded with {cmd}, containing {data}")
                 self.device.info = data
             # Update device config if command is related
             if cmd in [257, 263, 264, 271, 274]:
-                self.logger.info(f"Device responded with {cmd}, containing {data}")
+                self.logger.debug(f"Device responded with {cmd}, containing {data}")
                 self.device.config = data
              
             # Device did not accept the password -- log error
