@@ -1,5 +1,5 @@
 class Constants:
-    VERSION = "0.6.1"
+    VERSION = "0.6.3"
     PACKET_HEADER = "0601"
 
     # BLE UUIDs

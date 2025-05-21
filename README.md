@@ -119,6 +119,7 @@ MQTT_PORT=1883
 MQTT_USER=_user_
 MQTT_PASSWORD=_password_
 LOGGING_LEVEL=INFO
+RSSI=--rssi
 ```
 
 ```bash

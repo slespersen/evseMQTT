@@ -156,7 +156,7 @@ class EventHandlers:
                 
             # Device charge status -- not sure what we need these for
             if cmd in [5, 6]:
-                self.logger.info(f"Device sent a charge status")
+                self.logger.info(f"Device sent charging status")
                 
             # Device responded to charge_start
             if cmd == 7:
